@@ -51,6 +51,8 @@ AliAnalysisTaskEMCALPi0CalibSelectionV2 * AddTaskEMCALPi0CalibrationV2(
   Bool_t  fSaveCells             = kFALSE,
   Bool_t  fSaveClusters          = kFALSE,
   Bool_t  isHeavyIon             = kFALSE,
+  Bool_t  fNContCut              = kFALSE,
+  Float_t minCellEnergy          = 0.05,
   Double_t minClusterEnergy      = 0.7,
   Double_t maxClusterEnergy      = 10,
   Int_t minNCells                = 2,
@@ -59,6 +61,7 @@ AliAnalysisTaskEMCALPi0CalibSelectionV2 * AddTaskEMCALPi0CalibrationV2(
   Float_t maxDiffTimeClusterPair = 100,  //  20 ns in Run1  
   Bool_t bSameSM                 = kTRUE,
   TString outputFile             = "", // AnalysisResults.root
+  TString periodName             = "",
   const char *trigSuffix         = ""
 ) 
 {
@@ -81,6 +84,7 @@ AliAnalysisTaskEMCALPi0CalibSelectionV2 * AddTaskEMCALPi0CalibrationV2(
   if ( wagon.Length() > 0 ) trigger = wagon;
   
   AliAnalysisTaskEMCALPi0CalibSelectionV2 * pi0calib = new AliAnalysisTaskEMCALPi0CalibSelectionV2(Form("EMCALPi0Calibration_%s",trigger.Data()));
+  pi0calib->SetCellMinEnergy(minCellEnergy);
   pi0calib->SetClusterMinEnergy(minClusterEnergy);
   pi0calib->SetClusterMaxEnergy(maxClusterEnergy);
   pi0calib->SetClusterLambda0Cuts(0.1,0.5);
@@ -90,6 +94,8 @@ AliAnalysisTaskEMCALPi0CalibSelectionV2 * AddTaskEMCALPi0CalibrationV2(
   pi0calib->SetNCellsGroup(0);
   if (bSameSM) pi0calib->SwitchOnSameSM();
     else pi0calib->SwitchOffSameSM();
+
+  pi0calib->SetPeriodName(periodName);
   
   // Timing cuts
   pi0calib->SetPairDTimeCut(maxDiffTimeClusterPair);   
@@ -122,6 +128,10 @@ AliAnalysisTaskEMCALPi0CalibSelectionV2 * AddTaskEMCALPi0CalibrationV2(
 
   if( fSaveClusters ){
     pi0calib->SetSaveClusters();
+  }
+
+  if( fNContCut ){
+    pi0calib->SetNContributorsCut();
   }
   
   //---------------------
